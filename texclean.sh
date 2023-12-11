@@ -1,11 +1,11 @@
 #!/bin/bash
 # CLI for removing LaTeX build file
 
-Version="0.1"
-Date="2023/12/07"
+Version="0.2"
+Date="2023/12/11"
 
 # getopt setup
-OPTSET=$(getopt -o hyv --long help,yes,version \
+OPTSET=$(getopt -o hyvr --long help,yes,version,recursive \
               -n 'texclean' -- "$@")
 
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
@@ -22,9 +22,10 @@ usage() {
     echo "Usage: $0 [OPTIONS]"
     echo "removes LaTeX build files from the current directory"
     echo "Options:"
-    echo " -h | --help      Dispay this help message"
-    echo " -y | --yes       Runs command without asking for confimation"
-    echo " -v | --version   Displays version number"
+    echo " -h | --help          Dispay this help message"
+    echo " -y | --yes           Runs command without asking for confimation"
+    echo " -r | --recursive     Runs command in all subfolders"
+    echo " -v | --version       Displays version number"
    }
 
 # Version information
@@ -50,6 +51,31 @@ noConfirmClean() {
     echo "Done"
 }
 
+# Recusive Clean Function
+recursiveClean() {
+    echo "the following files will be deleated:"
+    find . -name "*.aux" -type f -print
+    find . -name "*.bbl" -type f -print
+    find . -name "*.bcf" -type f -print
+    find . -name "*.blg" -type f -print
+    find . -name "*fdb_latexmk" -type f -print
+    find . -name "*.fls" -type f -print
+    find . -name "*.run.xml" -type f -print
+    find . -name "synctex.gz" -type f -print
+    echo "Recursive mode will not remove generated .log files"
+    read -p "Do you want to continue? [Y/n]  " -r 
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            find . -name "*.aux" -type f -delete 2> /dev/null
+            find . -name "*.bbl" -type f -delete 2> /dev/null
+            find . -name "*.bcf" -type f -delete 2> /dev/null
+            find . -name "*.blg" -type f -delete 2> /dev/null
+            find . -name "*fdb_latexmk" -type f -delete 2> /dev/null
+            find . -name "*.fls" -type f -delete 2> /dev/null
+            find . -name "*.run.xml" -type f -delete 2> /dev/null
+            find . -name "synctex.gz" -type f -delete 2> /dev/null
+            echo "Done"
+        fi
+}
 
 # Function loop
 while true; do
@@ -57,6 +83,7 @@ while true; do
         -h | --help ) usage ; exit 0 ;;
         -y | --yes ) noConfirmClean ; exit 0;;
         -v | --version ) version ; exit 0 ;;
+        -r | --recursive ) recursiveClean ; exit 0 ;;
         * ) texclean ; exit 0 ;;
     esac
 done
