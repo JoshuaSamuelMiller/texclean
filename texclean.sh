@@ -36,23 +36,17 @@ version() {
 # Primary script function
 texclean() {
     echo "The following files will be deleated:"
-    find $fileTypes
-    if [ $userConfirm = false ];
-        then
-            rm $fileTypes
-        else
+    find $fileTypes -print
             read -p "Do you want to continue? [Y/n]  " -r
-            if [[ $REPLY =~ ^[Yy]$ ]]
-                    then
-                        rm $fileTypes
-                        echo "Done"   # remove files
+            if [[ $REPLY =~ ^[Yy]$ ]]            then
+                rm $fileTypes 2> /dev/null
+                echo "Done"   # removes file with no output to the terminal
             fi
-fi
 }
 
 # No Confirm Function
 noConfirmClean() {
-    rm $fileTypes
+    rm $fileTypes 2> /dev/null  # removes files with no output to the terminal
     echo "Done"
 }
 
